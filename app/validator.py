@@ -3,22 +3,22 @@ import numpy as np
 import os
 import json
 from typing import List, Tuple
-from openai import OpenAI
+from google import genai
 from dotenv import load_dotenv
 
 # Load biến môi trường từ file .env
 load_dotenv()
 
-# Khởi tạo OpenAI client (lazy loading)
+# Khởi tạo Gemini client (lazy loading)
 _client = None
 
-def get_openai_client():
+def get_gemini_client():
     global _client
     if _client is None:
-        api_key = os.getenv("OPENAI_API_KEY")
+        api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
-            raise ValueError("OPENAI_API_KEY không được tìm thấy trong môi trường.")
-        _client = OpenAI(api_key=api_key)
+            raise ValueError("GEMINI_API_KEY không được tìm thấy trong môi trường.")
+        _client = genai.Client(api_key=api_key)
     return _client
 
 # Từ điển ánh xạ các cột phổ biến
@@ -56,37 +56,46 @@ def ai_column_mapping(
     target_columns: List[str]
 ) -> Tuple[pd.DataFrame, dict]:
     """
-    Sử dụng AI để mapping các cột trong dataframe về schema chuẩn.
+    Sử dụng Gemini để mapping các cột không rõ ràng về schema chuẩn.
+    Chỉ được gọi khi rule-based mapping không đủ.
     """
     input_columns = df.columns.tolist()
 
     prompt = f"""
-    Bạn là một chuyên gia xử lý dữ liệu.
-    Nhiệm vụ: Map các cột input về các cột chuẩn.
-    Input columns: {input_columns}
-    Target columns: {target_columns}
-    Trả về JSON mapping từ input → target.
+    Bạn là chuyên gia xử lý dữ liệu.
+
+    Hãy map các cột input sang các cột chuẩn.
+
+    Input columns:
+    {input_columns}
+
+    Target columns:
+    {target_columns}
+
+    Trả về JSON format:
+    {{"input_column": "target_column"}}
+
+    Chỉ map khi chắc chắn. Chỉ trả về JSON. Không giải thích.
     """
 
     try:
-        client = get_openai_client()
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a data preprocessing assistant."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0,
-            response_format={ "type": "json_object" }
+        client = get_gemini_client()
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt,
+            config={"temperature": 0}
         )
+        content = response.text.strip()
 
-        content = response.choices[0].message.content.strip()
+        # Xử lý markdown code block nếu Gemini trả về
+        content = content.replace("```json", "").replace("```", "").strip()
         mapping = json.loads(content)
 
     except Exception as e:
-        print("AI mapping failed:", e)
+        print("Gemini mapping failed:", e)
         return df, {}
 
+    # Chỉ áp dụng mapping hợp lệ
     valid_mapping = {
         k: v for k, v in mapping.items()
         if k in input_columns and v in target_columns
