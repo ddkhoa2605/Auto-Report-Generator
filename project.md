@@ -150,6 +150,31 @@ Tuần 4 (Day 22–28) → PHASE 4: Polish, Testing & Demo
 
 **File:** `app/metrics.py`
 
+- [x] Viết function `build_metrics_payload(df)` — tổng hợp tất cả metrics thành dict
+- [x] Viết function `format_currency_vnd(value)` — format số tiền VND
+- [x] Viết unit test cho metrics
+
+---
+
+### 2.2 AI Insight Engine (Day 10–12)
+
+**File:** `app/ai_engine.py`
+
+- [x] Setup OpenAI client với API key từ `.env`
+- [x] Viết function `generate_insight(metrics: dict) -> dict` — gọi GPT-4o-mini
+- [x] Thiết kế output schema (insights, warnings, recommendations)
+- [x] Xử lý lỗi: rate limit, timeout, invalid API key
+
+---
+
+### 2.3 Integration Test (Day 13–14)
+
+- [x] Test full pipeline: `load → validate → process → metrics → AI insight`
+- [x] Đo thời gian chạy (target: < 30 giây end-to-end)
+- [x] Xử lý edge case
+
+**File:** `app/metrics.py`
+
 Chuẩn hóa output thành structured JSON để feed cho AI:
 
 ```json

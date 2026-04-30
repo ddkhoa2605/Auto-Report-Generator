@@ -1,0 +1,3 @@
+- Đừng viết code lộn xộn
+- Ưu tiên các giải pháp đơn giản
+- Luôn giải thích trước khi viết code

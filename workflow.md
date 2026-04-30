@@ -1,0 +1,5 @@
+- Hiểu vấn đề
+- Lên kế hoạch giải pháp
+- Viết code
+- Valid lại
+- Đánh dấu những gì vừa hoàn thành vào file project.md
