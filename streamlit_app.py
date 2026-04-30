@@ -70,7 +70,7 @@ st.markdown("""
         font-size: 28px;
     }
     </style>
-    """, unsafe_allow_stdio=True, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 # Sidebar
 with st.sidebar:
@@ -130,12 +130,17 @@ if uploaded_file is not None:
                 anomalies = detect_anomalies(df)
                 st.plotly_chart(plot_revenue_trend(daily_rev, anomalies), use_container_width=True)
             with c2:
-                top_products_df = pd.DataFrame(metrics['top_products'])
-                if not top_products_df.empty:
-                    top_products_df = top_products_df.rename(columns={'name': 'product'})
-                    st.plotly_chart(plot_product_pie(top_products_df), use_container_width=True)
+                top_products_data = pd.DataFrame(metrics['top_products'])
+                if not top_products_data.empty:
+                    top_products_data = top_products_data.rename(columns={'name': 'product'})
+                    fig_pie = plot_product_pie(top_products_data)
+                    if fig_pie:
+                        st.plotly_chart(fig_pie, use_container_width=True)
 
-            st.plotly_chart(plot_top_products(pd.DataFrame(metrics['top_products']).rename(columns={'name': 'product'})), use_container_width=True)
+            if not pd.DataFrame(metrics['top_products']).empty:
+                fig_bar = plot_top_products(pd.DataFrame(metrics['top_products']).rename(columns={'name': 'product'}))
+                if fig_bar:
+                    st.plotly_chart(fig_bar, use_container_width=True)
 
         with tab2:
             st.markdown("<div class='ai-header'>🤖 AI Consultant Insight</div>", unsafe_allow_html=True)

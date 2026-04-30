@@ -398,27 +398,27 @@ Viết bằng tiếng Việt, ngắn gọn, dễ hiểu cho chủ doanh nghiệp
 
 ### 4.2 UX Polish (Day 25–26)
 
-- [ ] Thêm tooltip giải thích các chỉ số (ROAS là gì, AOV là gì)
-- [ ] Responsive layout trên màn hình nhỏ
-- [ ] Dark mode (tùy chọn)
-- [ ] Thêm progress bar khi generating report
-- [ ] Hiển thị thời gian xử lý sau khi xong
-- [ ] Thêm "Copy to Clipboard" cho AI insight
-- [ ] Cải thiện error messages (tiếng Việt, thân thiện)
-- [ ] Thêm favicon và page title
+- [x] Thêm tooltip giải thích các chỉ số (ROAS là gì, AOV là gì)
+- [x] Responsive layout trên màn hình nhỏ
+- [x] Dark mode (tùy chọn)
+- [x] Thêm progress bar khi generating report
+- [x] Hiển thị thời gian xử lý sau khi xong
+- [x] Thêm "Copy to Clipboard" cho AI insight
+- [x] Cải thiện error messages (tiếng Việt, thân thiện)
+- [x] Thêm favicon và page title
 
 ---
 
 ### 4.3 Documentation (Day 27)
 
-- [ ] Cập nhật `README.md`:
-  - [ ] Mô tả dự án + screenshot
-  - [ ] Hướng dẫn cài đặt (3 bước đơn giản)
-  - [ ] Hướng dẫn sử dụng
-  - [ ] FAQ
-- [ ] Viết docstring cho tất cả public functions
-- [ ] Tạo `ARCHITECTURE.md` — mô tả kiến trúc hệ thống
-- [ ] Tạo `DEMO.md` — script demo phỏng vấn
+- [x] Cập nhật `README.md`:
+  - [x] Mô tả dự án + screenshot
+  - [x] Hướng dẫn cài đặt (3 bước đơn giản)
+  - [x] Hướng dẫn sử dụng
+  - [x] FAQ
+- [x] Viết docstring cho tất cả public functions
+- [x] Tạo `ARCHITECTURE.md` — mô tả kiến trúc hệ thống
+- [x] Tạo `DEMO.md` — script demo phỏng vấn
 
 ---
 
