@@ -7,186 +7,391 @@ from app.ai_engine import generate_insight
 from app.reporter import generate_pdf_report
 import os
 
-# Cấu hình trang
+# ─── Cấu hình trang ──────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="AI Business Insight Dashboard",
+    page_title="Business Intelligence Dashboard",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS cho giao diện Premium
+# ─── CSS Doanh Nghiệp ─────────────────────────────────────────────────────────
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-    
-    html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+    :root {
+        --bg:          #F4F5F7;
+        --surface:     #FFFFFF;
+        --border:      #E2E4E9;
+        --text-primary: #0D1117;
+        --text-muted:  #6B7280;
+        --accent:      #1B4FD8;
+        --accent-light:#EEF2FF;
+        --positive:    #16A34A;
+        --negative:    #DC2626;
+        --mono:        'DM Mono', monospace;
     }
-    
-    .main {
-        background-color: #f8f9fa;
+
+    html, body, [class*="css"], .stApp, .main {
+        font-family: 'DM Sans', sans-serif;
+        background-color: var(--bg) !important;
     }
-    
-    /* Glassmorphism cho Metric Cards */
-    .metric-card {
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 15px;
-        padding: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        text-align: center;
-        transition: transform 0.3s ease;
-    }
-    
-    .metric-card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .metric-value {
-        font-size: 24px;
-        font-weight: 700;
-        color: #1E3A8A;
-    }
-    
-    .metric-label {
-        font-size: 14px;
-        color: #6B7280;
-        margin-bottom: 5px;
-    }
-    
-    /* Gradient Sidebar */
+
+    /* ── Sidebar ── */
     [data-testid="stSidebar"] {
-        background-image: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 100%);
-        color: white;
+        background-color: var(--surface);
+        border-right: 1px solid var(--border);
     }
-    
-    /* Header AI */
-    .ai-header {
-        background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: 800;
-        font-size: 28px;
+    [data-testid="stSidebar"] * {
+        color: var(--text-primary) !important;
+    }
+    [data-testid="stSidebarNav"] { display: none; }
+
+    .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 0 20px;
+    }
+    .sidebar-logo-mark {
+        width: 32px; height: 32px;
+        background: var(--accent);
+        border-radius: 6px;
+        display: inline-block;
+    }
+    .sidebar-logo-text {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+    }
+    .sidebar-section {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 20px 0 8px;
+    }
+
+    /* ── Page Header ── */
+    .page-header {
+        padding: 8px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 28px;
+    }
+    .page-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.4px;
+        margin: 0;
+    }
+    .page-subtitle {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin: 4px 0 0;
+    }
+
+    /* ── KPI Cards ── */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+    .kpi-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 20px 22px;
+        min-height: 125px; /* Ép các thẻ luôn bằng nhau */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .kpi-label {
+        font-size: 14px; /* Tăng từ 12px -> 14px */
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+    .kpi-value {
+        font-size: 28px; /* Tăng từ 26px -> 28px */
+        font-weight: 700;
+        color: var(--text-primary);
+        font-family: var(--mono);
+        letter-spacing: -0.5px;
+        line-height: 1.2; /* Thu gọn khoảng cách khi rớt dòng */
+        white-space: nowrap; /* Cấm rớt dòng ngẫu nhiên */
+    }
+    .kpi-value.positive { color: var(--positive); }
+    .kpi-value.negative { color: var(--negative); }
+
+    /* ── Section Headers ── */
+    .section-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.2px;
+        margin: 0 0 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* ── AI Panel ── */
+    .ai-insight-label {
+        display: inline-block;
+        background: var(--accent-light);
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 4px;
+        margin-bottom: 14px;
+    }
+    .insight-block {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 14px;
+    }
+    .insight-block-title {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+    }
+    .insight-block.highlight { border-left: 3px solid var(--accent); }
+    .insight-block.warn      { border-left: 3px solid #F59E0B; }
+
+    /* ── Divider ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    /* ── Buttons ── */
+    .stButton > button {
+        background-color: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 8px 18px;
+        letter-spacing: 0.01em;
+        transition: opacity 0.15s;
+    }
+    .stButton > button:hover { opacity: 0.88; }
+
+    /* ── Tab styling ── */
+    [data-baseweb="tab-list"] {
+        border-bottom: 1px solid var(--border);
+        gap: 0;
+    }
+    [data-baseweb="tab"] {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: var(--text-muted) !important;
+        padding: 10px 18px !important;
+        border-bottom: 2px solid transparent !important;
+    }
+    [aria-selected="true"][data-baseweb="tab"] {
+        color: var(--accent) !important;
+        border-bottom-color: var(--accent) !important;
     }
     </style>
+""", unsafe_allow_html=True)
+
+
+# ─── Sidebar ──────────────────────────────────────────────────────────────────
+with st.sidebar:
+    st.markdown("""
+        <div class="sidebar-logo">
+            <span class="sidebar-logo-mark"></span>
+            <span class="sidebar-logo-text">BI Dashboard</span>
+        </div>
     """, unsafe_allow_html=True)
 
-# Sidebar
-with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/1693/1693746.png", width=80)
-    st.title("Phân Tích Kinh Doanh")
-    uploaded_file = st.file_uploader("Tải lên file báo cáo (CSV/Excel)", type=["csv", "xlsx"])
-    
-    st.markdown("---")
-    st.info("Hệ thống sử dụng Gemini 2.0 Flash để phân tích chuyên sâu.")
-    
-    if st.button("Reset Dữ Liệu"):
+    st.markdown('<div class="sidebar-section">Nguồn dữ liệu</div>', unsafe_allow_html=True)
+    uploaded_file = st.file_uploader(
+        "Tải lên báo cáo",
+        type=["csv", "xlsx"],
+        label_visibility="collapsed",
+        help="Hỗ trợ định dạng CSV và Excel (.xlsx)"
+    )
+
+    st.markdown('<div class="sidebar-section">Hành động</div>', unsafe_allow_html=True)
+    if st.button("Làm mới", use_container_width=True):
         st.rerun()
 
-# Nội dung chính
-st.title("🚀 AI Business Insight Dashboard")
-st.markdown("Chuyển đổi dữ liệu thô thành chiến lược kinh doanh thông minh.")
+    st.markdown("---")
+    st.caption("Phân tích được hỗ trợ bởi Coze AI · Dữ liệu không được lưu trữ.")
 
+
+# ─── Tiêu đề trang ────────────────────────────────────────────────────────────
+st.markdown("""
+    <div class="page-header">
+        <div class="page-title">Phân Tích Kinh Doanh</div>
+        <div class="page-subtitle">Tổng quan hiệu suất doanh thu và phân tích chiến lược</div>
+    </div>
+""", unsafe_allow_html=True)
+
+
+# ─── Nội dung chính ───────────────────────────────────────────────────────────
 if uploaded_file is not None:
     try:
-        # 1. Xử lý dữ liệu
         with st.spinner("Đang xử lý dữ liệu..."):
-            # Lưu tạm file
             temp_path = f"data/temp_{uploaded_file.name}"
+            os.makedirs("data", exist_ok=True)
             with open(temp_path, "wb") as f:
                 f.write(uploaded_file.getbuffer())
-            
+
             df = validate_pipeline(temp_path)
             metrics = build_metrics_payload(df)
-            
-            # Xóa file tạm
             os.remove(temp_path)
 
-        # 2. Hiển thị Metrics Row
+        # ── KPI Cards ─────────────────────────────────────────────────────────
+        growth_rate = metrics.get('growth_and_trend', {}).get('revenue_growth_rate', 0)
+        growth_class = "positive" if growth_rate >= 0 else "negative"
+        growth_sign  = "+" if growth_rate >= 0 else ""
+
         col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.markdown(f"""<div class='metric-card'><div class='metric-label'>Tổng Doanh Thu</div><div class='metric-value'>{format_currency_vnd(metrics['summary']['total_revenue'])}</div></div>""", unsafe_allow_html=True)
-        with col2:
-            st.markdown(f"""<div class='metric-card'><div class='metric-label'>Số Đơn Hàng</div><div class='metric-value'>{metrics['summary']['total_orders']}</div></div>""", unsafe_allow_html=True)
-        with col3:
-            st.markdown(f"""<div class='metric-card'><div class='metric-label'>Giá Trị Trung Bình</div><div class='metric-value'>{format_currency_vnd(metrics['summary']['avg_order_value'])}</div></div>""", unsafe_allow_html=True)
-        with col4:
-            growth_color = "green" if metrics['summary']['revenue_growth_percent'] >= 0 else "red"
-            st.markdown(f"""<div class='metric-card'><div class='metric-label'>Tăng Trưởng</div><div class='metric-value' style='color:{growth_color}'>{metrics['summary']['revenue_growth_percent']}%</div></div>""", unsafe_allow_html=True)
+        kpi_items = [
+            (col1, "Tổng Doanh Thu",    format_currency_vnd(metrics['summary']['total_revenue']), ""),
+            (col2, "Số Đơn Hàng",        f"{metrics['summary']['total_orders']:,}",                ""),
+            (col3, "Giá Trị Trung Bình", format_currency_vnd(metrics['summary']['avg_order_value']), ""),
+            (col4, "Tăng Trưởng",        f"{growth_sign}{growth_rate}%",                            growth_class),
+        ]
+        for col, label, value, cls in kpi_items:
+            with col:
+                st.markdown(f"""
+                    <div class="kpi-card">
+                        <div class="kpi-label">{label}</div>
+                        <div class="kpi-value {cls}">{value}</div>
+                    </div>
+                """, unsafe_allow_html=True)
 
-        st.markdown("---")
+        st.markdown("<hr>", unsafe_allow_html=True)
 
-        # 3. Biểu đồ & AI Insight
-        tab1, tab2 = st.tabs(["📊 Phân Tích Xu Hướng", "🧠 Nhận Xét Từ AI"])
+        # ── Tabs ──────────────────────────────────────────────────────────────
+        tab1, tab2 = st.tabs(["Xu Hướng & Phân Phối", "Phân Tích AI"])
 
+        # Tab 1 — Biểu đồ
         with tab1:
+            st.markdown('<div class="section-title">Doanh thu theo thời gian</div>', unsafe_allow_html=True)
             c1, c2 = st.columns([2, 1])
             with c1:
-                # Lấy anomalies để vẽ
                 daily_rev = df.groupby('date')['revenue'].sum().reset_index()
                 from app.processor import detect_anomalies
                 anomalies = detect_anomalies(df)
                 st.plotly_chart(plot_revenue_trend(daily_rev, anomalies), use_container_width=True)
             with c2:
-                top_products_data = pd.DataFrame(metrics['top_products'])
+                top_products_data = pd.DataFrame(metrics.get('distribution', {}).get('top_products', []))
                 if not top_products_data.empty:
                     top_products_data = top_products_data.rename(columns={'name': 'product'})
                     fig_pie = plot_product_pie(top_products_data)
                     if fig_pie:
                         st.plotly_chart(fig_pie, use_container_width=True)
 
-            if not pd.DataFrame(metrics['top_products']).empty:
-                fig_bar = plot_top_products(pd.DataFrame(metrics['top_products']).rename(columns={'name': 'product'}))
+            st.markdown('<div class="section-title">Sản phẩm hàng đầu</div>', unsafe_allow_html=True)
+            top_df = pd.DataFrame(metrics.get('distribution', {}).get('top_products', []))
+            if not top_df.empty:
+                fig_bar = plot_top_products(top_df.rename(columns={'name': 'product'}))
                 if fig_bar:
                     st.plotly_chart(fig_bar, use_container_width=True)
 
+        # Tab 2 — AI Insight
         with tab2:
-            st.markdown("<div class='ai-header'>🤖 AI Consultant Insight</div>", unsafe_allow_html=True)
-            
-            with st.spinner("Gemini đang suy nghĩ..."):
+            st.markdown('<span class="ai-insight-label">AI Consultant</span>', unsafe_allow_html=True)
+
+            with st.spinner("Đang phân tích..."):
                 ai_report = generate_insight(metrics)
-                
-                st.subheader("📝 Tóm tắt")
-                st.write(ai_report['summary'])
-                
-                c_insight, c_warn = st.columns(2)
-                with c_insight:
-                    st.success("💡 Điểm sáng")
-                    for item in ai_report['insights']:
-                        st.write(f"- {item}")
-                
-                with c_warn:
-                    st.warning("⚠️ Lưu ý & Rủi ro")
-                    for item in ai_report['warnings']:
-                        st.write(f"- {item}")
-                
-                st.subheader("🎯 Đề xuất hành động")
-                for item in ai_report['recommendations']:
-                    st.info(item)
-                
-                # Nút xuất PDF
-                st.markdown("---")
-                pdf_filename = f"report_{uploaded_file.name.split('.')[0]}.pdf"
-                pdf_path = f"output/reports/{pdf_filename}"
-                
-                os.makedirs("output/reports", exist_ok=True)
-                
-                if st.button("📄 Tạo Báo Cáo PDF"):
-                    with st.spinner("Đang khởi tạo PDF..."):
-                        generate_pdf_report(metrics, ai_report, pdf_path)
-                        with open(pdf_path, "rb") as f:
-                            st.download_button(
-                                label="⬇️ Tải xuống Báo Cáo PDF",
-                                data=f,
-                                file_name=pdf_filename,
-                                mime="application/pdf"
-                            )
+
+            st.markdown('<div class="section-title">Tóm tắt</div>', unsafe_allow_html=True)
+            st.markdown(f"""<div class="insight-block">{ai_report['summary']}</div>""", unsafe_allow_html=True)
+
+            c_insight, c_warn = st.columns(2)
+            with c_insight:
+                items_html = "".join(f"<p style='margin:6px 0;font-size:14px;'>— {item}</p>" for item in ai_report['insights'])
+                st.markdown(f"""
+                    <div class="insight-block highlight">
+                        <div class="insight-block-title">Điểm tích cực</div>
+                        {items_html}
+                    </div>
+                """, unsafe_allow_html=True)
+            with c_warn:
+                items_html = "".join(f"<p style='margin:6px 0;font-size:14px;'>— {item}</p>" for item in ai_report['warnings'])
+                st.markdown(f"""
+                    <div class="insight-block warn">
+                        <div class="insight-block-title">Lưu ý & Rủi ro</div>
+                        {items_html}
+                    </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown('<div class="section-title" style="margin-top:20px;">Khuyến nghị hành động</div>', unsafe_allow_html=True)
+            for i, item in enumerate(ai_report['recommendations'], 1):
+                st.markdown(f"""
+                    <div class="insight-block" style="display:flex;gap:14px;align-items:flex-start;">
+                        <span style="font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600;padding-top:2px;min-width:20px;">{i:02d}</span>
+                        <span style="font-size:14px;">{item}</span>
+                    </div>
+                """, unsafe_allow_html=True)
+
+            # Xuất PDF
+            st.markdown("<hr>", unsafe_allow_html=True)
+            pdf_filename = f"report_{uploaded_file.name.rsplit('.', 1)[0]}.pdf"
+            pdf_path     = f"output/reports/{pdf_filename}"
+            os.makedirs("output/reports", exist_ok=True)
+
+            if st.button("Tạo báo cáo PDF"):
+                with st.spinner("Đang tạo PDF..."):
+                    generate_pdf_report(metrics, ai_report, pdf_path)
+                    with open(pdf_path, "rb") as f:
+                        st.download_button(
+                            label="Tải xuống báo cáo",
+                            data=f,
+                            file_name=pdf_filename,
+                            mime="application/pdf",
+                        )
 
     except Exception as e:
-        st.error(f"Đã xảy ra lỗi khi xử lý dữ liệu: {e}")
+        st.error(f"Lỗi xử lý dữ liệu: {e}")
+
 else:
-    # Màn hình chờ
-    st.image("https://img.freepik.com/free-vector/data-analysis-concept-illustration_114360-804.jpg", width=400)
-    st.info("Vui lòng tải lên file dữ liệu ở thanh bên trái để bắt đầu phân tích.")
+    # ── Trạng thái rỗng ───────────────────────────────────────────────────────
+    st.markdown("""
+        <div style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            border: 1px dashed #D1D5DB;
+            border-radius: 12px;
+            background: #fff;
+            text-align: center;
+        ">
+            <div style="
+                width: 48px; height: 48px;
+                background: #EEF2FF;
+                border-radius: 10px;
+                display: flex; align-items: center; justify-content: center;
+                margin-bottom: 18px;
+                font-size: 22px;
+            ">&#128202;</div>
+            <div style="font-size:16px;font-weight:600;color:#0D1117;margin-bottom:8px;">
+                Chưa có dữ liệu
+            </div>
+            <div style="font-size:14px;color:#6B7280;max-width:340px;line-height:1.6;">
+                Tải lên file CSV hoặc Excel từ thanh bên trái để bắt đầu phân tích.
+                Hệ thống sẽ tự động tính toán các chỉ số và tạo báo cáo AI.
+            </div>
+        </div>
+    """, unsafe_allow_html=True)

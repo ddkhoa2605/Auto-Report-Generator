@@ -2,42 +2,45 @@ import pandas as pd
 from app.processor import (
     compute_daily_revenue,
     compute_top_products,
-    compute_revenue_growth,
-    compute_avg_order_value,
+    compute_growth_metrics,
+    compute_efficiency_metrics,
     detect_anomalies
 )
 
 def format_currency_vnd(amount: float) -> str:
-    """Định dạng số tiền sang VNĐ (ví dụ: 1.250.000 VNĐ)."""
-    return f"{amount:,.0f} VNĐ".replace(",", ".")
+    """Định dạng số tiền sang VNĐ, thu gọn thành Triệu/Tỷ nếu số quá lớn."""
+    if amount >= 1_000_000_000:
+        return f"{amount / 1_000_000_000:.2f}".replace(".", ",") + " Tỷ VNĐ"
+    elif amount >= 1_000_000:
+        return f"{amount / 1_000_000:.2f}".replace(".", ",") + " Tr VNĐ"
+    else:
+        return f"{amount:,.0f} VNĐ".replace(",", ".")
 
 def build_metrics_payload(df: pd.DataFrame) -> dict:
     """
-    Tổng hợp tất cả các chỉ số kinh doanh thành một dictionary cấu trúc
-    để chuẩn bị gửi cho AI Engine hoặc Dashboard.
+    Tổng hợp toàn bộ các chỉ số kinh doanh chuyên sâu.
     """
-    total_revenue = df['revenue'].sum()
-    growth = compute_revenue_growth(df)
-    aov = compute_avg_order_value(df)
-    total_orders = df['orders'].sum() if 'orders' in df.columns else len(df)
+    total_rev = float(df['revenue'].sum())
+    total_ord = int(df['orders'].sum() if 'orders' in df.columns else len(df))
     
-    # Lấy top 5 sản phẩm
+    # 1. Growth & Trend
+    growth = compute_growth_metrics(df)
+    
+    # 2. Efficiency
+    efficiency = compute_efficiency_metrics(df)
+    
+    # 3. Distribution (Top products)
     top_products_df = compute_top_products(df, n=5)
     top_products = []
     if not top_products_df.empty:
         for _, row in top_products_df.iterrows():
             top_products.append({
-                "name": row['product'],
+                "name": str(row['product']),
                 "revenue": float(row['revenue']),
-                "share": round(row['revenue'] / total_revenue, 2) if total_revenue > 0 else 0
+                "share_percent": round(row['revenue'] / total_rev * 100, 2) if total_rev > 0 else 0
             })
             
-    # Lấy thông tin ngày tệ nhất/tốt nhất
-    daily_rev = compute_daily_revenue(df)
-    best_day_row = daily_rev.loc[daily_rev['revenue'].idxmax()]
-    worst_day_row = daily_rev.loc[daily_rev['revenue'].idxmin()]
-    
-    # Phát hiện bất thường
+    # 4. Anomaly
     anomalies_df = detect_anomalies(df)
     anomalies = []
     if not anomalies_df.empty:
@@ -45,28 +48,22 @@ def build_metrics_payload(df: pd.DataFrame) -> dict:
             anomalies.append({
                 "date": str(row['date'].date()),
                 "revenue": float(row['revenue']),
-                "type": "high" if row['z_score'] > 0 else "low"
+                "anomaly_percent": float(row['anomaly_percent']),
+                "status": "Tăng đột biến" if row['anomaly_percent'] > 0 else "Giảm sốc"
             })
 
-    # Tạo payload cuối cùng
+    # Cấu trúc Payload chuẩn
     payload = {
         "summary": {
             "period": f"{df['date'].min().date()} to {df['date'].max().date()}",
-            "total_revenue": float(total_revenue),
-            "total_orders": int(total_orders),
-            "avg_order_value": float(aov),
-            "revenue_growth_percent": float(growth)
+            "total_revenue": total_rev,
+            "total_orders": total_ord,
+            "avg_order_value": efficiency['revenue_per_order']
         },
-        "top_products": top_products,
-        "performance_highlights": {
-            "best_day": {
-                "date": str(best_day_row['date'].date()),
-                "revenue": float(best_day_row['revenue'])
-            },
-            "worst_day": {
-                "date": str(worst_day_row['date'].date()),
-                "revenue": float(worst_day_row['revenue'])
-            }
+        "growth_and_trend": growth,
+        "efficiency": efficiency,
+        "distribution": {
+            "top_products": top_products
         },
         "anomalies": anomalies
     }

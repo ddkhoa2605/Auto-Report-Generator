@@ -1,84 +1,92 @@
 # 📊 AI Business Insight Dashboard
 
-**AI Business Insight Dashboard** là một giải pháp phân tích dữ liệu kinh doanh thông minh, tự động chuyển đổi các file báo cáo thô (CSV/Excel) thành các biểu đồ trực quan và nhận xét chuyên sâu từ trí tuệ nhân tạo (Gemini 2.0 Flash).
+![Dashboard Overview](assets/dashboard_overview.png) *(Insert dashboard screenshot here)*
 
-Dự án được thiết kế để hỗ trợ các doanh nghiệp SME, người bán hàng E-commerce (Shopee, Lazada, TikTok Shop) nắm bắt tình hình kinh doanh chỉ trong vài giây.
+An enterprise-grade Business Intelligence (BI) dashboard powered by AI. This system ingests raw e-commerce sales data (CSV/Excel), sanitizes it, computes deep business metrics (AOV, Growth Rates, Anomaly Detection), and uses **Coze AI (Claude/GPT-4o)** to act as an automated business analyst, delivering actionable insights and generating PDF reports.
 
----
+## ✨ Features
 
-## 🔥 Tính năng nổi bật
+- **Automated Data Pipeline**: Robustly handles messy Excel/CSV files, cleaning `revenue` and `orders` data using RegEx.
+- **Deep Metrics Calculation**: Computes Growth Rates (MoM), Average Order Value (AOV), Revenue per Order, and Z-Score based daily anomaly detection.
+- **Enterprise SaaS UI**: A clean, responsive, and highly professional Dashboard built with Streamlit using custom CSS (Light Mode forced, DM Sans/Mono fonts).
+- **AI Business Consultant**: Integrates with Coze API to parse numerical data and generate human-readable insights (Summaries, Highlights, Risks, and Priority-based Recommendations).
+- **Smart Text Parser**: Fault-tolerant AI integration that can parse plain text into JSON structures if the AI model drops format constraints.
+- **Automated PDF Reporting**: Generates localized (Vietnamese-supported) PDF reports using embedded Arial fonts.
 
-- **🤖 AI-Powered Mapping**: Tự động nhận diện và ánh xạ các cột dữ liệu (Ngày tháng, Doanh thu, Sản phẩm) bằng AI, hỗ trợ cả tiếng Anh và tiếng Việt.
-- **📈 Phân tích KPI tự động**: Tính toán ngay lập tức Tổng doanh thu, Tăng trưởng, AOV (Giá trị đơn hàng trung bình).
-- **🚨 Phát hiện bất thường (Anomaly Detection)**: Sử dụng thuật toán Z-Score để cảnh báo các ngày có biến động doanh thu lạ.
-- **💡 AI Business Consultant**: Tích hợp Gemini 2.0 Flash để đưa ra nhận xét, cảnh báo rủi ro và đề xuất hành động cụ thể.
-- **📄 Xuất báo cáo chuyên nghiệp**: Tải về bản phân tích dưới dạng file PDF chỉ với một cú click.
-- **💎 Giao diện cao cấp**: UI hiện đại, responsive, hiệu ứng Glassmorphism tinh tế.
+## 📸 Screenshots
 
----
+### 1. KPI & Trend Analysis
+![KPI and Charts](assets/kpi_charts.png) *(Insert KPI and Chart screenshot here)*
 
-## 🛠 Công nghệ sử dụng
+### 2. AI Consultant Insights
+![AI Insights](assets/ai_insights.png) *(Insert AI Consultant screenshot here)*
 
-- **Ngôn ngữ**: Python 3.9+
-- **Giao diện**: Streamlit (Custom CSS)
-- **AI Engine**: Google Gemini 2.0 Flash SDK
-- **Xử lý dữ liệu**: Pandas, NumPy
-- **Trực quan hóa**: Plotly Express
-- **Báo cáo**: ReportLab (PDF Generator)
+## 🛠️ Technology Stack
 
----
+- **Frontend/UI**: Streamlit (with custom Enterprise CSS & Plotly for charts)
+- **Data Processing**: Pandas, NumPy
+- **AI Integration**: Coze API (`requests`), Custom Text-to-JSON Parser
+- **PDF Generation**: ReportLab (Embedded System Arial Font)
 
-## 🚀 Hướng dẫn cài đặt
+## 📁 Project Structure
 
-### 1. Clone repository
-```bash
-git clone https://github.com/ddkhoa2605/report_generator.git
-cd report_generator
+```text
+📦 AI_Business_Dashboard
+ ┣ 📂 app/
+ ┃ ┣ 📜 ai_engine.py      # Coze API integration & Text Parser
+ ┃ ┣ 📜 metrics.py        # Compiles deep metrics payload for AI
+ ┃ ┣ 📜 processor.py      # Calculations (Z-Score, AOV, Growth)
+ ┃ ┣ 📜 reporter.py       # PDF generation with Vietnamese support
+ ┃ ┣ 📜 validator.py      # Data cleaning & sanitization pipeline
+ ┃ ┗ 📜 visualizer.py     # Plotly chart generation
+ ┣ 📂 .streamlit/
+ ┃ ┗ 📜 config.toml       # Streamlit Light theme enforcement
+ ┣ 📜 streamlit_app.py    # Main UI Dashboard
+ ┣ 📜 requirements.txt    # Python dependencies
+ ┣ 📜 .env                # Environment variables (API Keys)
+ ┗ 📜 README.md
 ```
 
-### 2. Cài đặt môi trường
-Khuyên dùng `venv` hoặc `conda`:
+## 🚀 Getting Started
+
+### 1. Clone the repository
 ```bash
-python -m venv venv
-source venv/bin/activate  # Trên Windows: venv\Scripts\activate
+git clone https://github.com/ddkhoa2605/Report_generator.git
+cd Report_generator
+```
+
+### 2. Install Dependencies
+```bash
 pip install -r requirements.txt
 ```
 
-### 3. Cấu hình API Key
-1. Copy file `.env.example` thành `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-2. Mở file `.env` và điền **GEMINI_API_KEY** của bạn (Lấy key tại [Google AI Studio](https://aistudio.google.com/)).
+### 3. Environment Setup
+Create a `.env` file in the root directory and configure your Coze API bot:
+```env
+COZE_API_KEY="your_personal_access_token_here"
+COZE_BOT_ID="your_published_bot_id_here"
+```
 
-### 4. Chạy ứng dụng
+### 4. Run the Dashboard
 ```bash
 streamlit run streamlit_app.py
 ```
+*(The dashboard will automatically open at `http://localhost:8501`)*
 
----
-
-## 📂 Cấu trúc thư mục
-
+## 🤖 Coze Bot Setup Guide
+To make the AI work flawlessly, ensure your Coze bot uses the following System Prompt:
 ```text
-├── app/
-│   ├── validator.py   # Làm sạch & Ánh xạ dữ liệu
-│   ├── processor.py   # Tính toán KPI & Bất thường
-│   ├── metrics.py     # Tổng hợp dữ liệu cho AI
-│   ├── ai_engine.py   # Kết nối Gemini AI
-│   ├── visualizer.py  # Logic vẽ biểu đồ Plotly
-│   └── reporter.py    # Xuất báo cáo PDF
-├── data/
-│   └── sample/        # Dữ liệu mẫu (Ecommerce, Ads, SME)
-├── tests/             # Unit tests & Integration tests
-├── streamlit_app.py   # File chạy chính giao diện
-└── requirements.txt   # Danh sách thư viện
+Bạn là chuyên gia phân tích kinh doanh tại Việt Nam.
+Dựa trên dữ liệu metrics được cung cấp dạng JSON, hãy:
+- Viết 1 câu tóm tắt
+- Phát hiện các điểm sáng (Insights)
+- Chỉ ra rủi ro/vấn đề (Warnings)
+- Đưa ra đề xuất hành động (Recommendations)
+Không giải thích thêm.
 ```
 
----
-
-## 📝 Giấy phép
-Dự án được phát hành dưới giấy phép MIT. Tự do sử dụng và đóng góp!
+## 📄 License
+This project is for educational and portfolio demonstration purposes.
 
 ---
-*Phát triển bởi **Đoàn Đăng Khoa** - 2026*
+**Created by**: Khoa (ddkhoa2605)
