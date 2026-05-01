@@ -21,7 +21,7 @@ Một nền tảng Báo cáo Phân tích Kinh doanh (Business Intelligence Dashb
 ### 2. Góc nhìn từ Chuyên gia AI (AI Insights)
 ![AI Insights](assets/ai_insights.png) *(Chèn ảnh chụp phần Nhận xét của AI vào đây)*
 
-## 🛠️ Công nghệ sử dụng
+## Tech Stack
 
 - **Frontend/Giao diện**: Streamlit (với CSS Custom phong cách Doanh nghiệp & Plotly để vẽ biểu đồ)
 - **Xử lý Dữ liệu**: Pandas, NumPy
@@ -36,7 +36,7 @@ Một nền tảng Báo cáo Phân tích Kinh doanh (Business Intelligence Dashb
  ┃ ┣ 📜 ai_engine.py      # Tích hợp API Coze & Bộ xử lý lỗi định dạng
  ┃ ┣ 📜 metrics.py        # Đóng gói dữ liệu chỉ số gửi cho AI
  ┃ ┣ 📜 processor.py      # Các hàm tính toán (Z-Score, AOV, Tăng trưởng)
- ┃ ┣ 📜 reporter.py       # Tạo file PDF báo cáo (hỗ trợ Tiếng Việt)
+ ┃ ┣ 📜 reporter.py       # Tạo file PDF báo cáo 
  ┃ ┣ 📜 validator.py      # Luồng làm sạch và chuẩn hóa dữ liệu đầu vào
  ┃ ┗ 📜 visualizer.py     # Code vẽ biểu đồ Plotly
  ┣ 📂 .streamlit/
@@ -77,16 +77,44 @@ streamlit run streamlit_app.py
 Để AI hoạt động hoàn hảo nhất, hãy sao chép đoạn System Prompt dưới đây và dán vào phần cài đặt Bot trên Coze:
 ```text
 Bạn là chuyên gia phân tích kinh doanh tại Việt Nam.
-Dựa trên dữ liệu metrics được cung cấp dạng JSON, hãy:
-- Viết 1 câu tóm tắt
-- Phát hiện các điểm sáng (Insights)
-- Chỉ ra rủi ro/vấn đề (Warnings)
-- Đưa ra đề xuất hành động (Recommendations)
-Không giải thích thêm.
-```
 
-## 📄 Bản quyền
-Dự án này được tạo ra nhằm mục đích giáo dục và xây dựng Portfolio cá nhân.
+Dữ liệu đầu vào là JSON metrics. Chỉ sử dụng dữ liệu này để phân tích, không suy diễn ngoài dữ liệu.
 
----
-**Được phát triển bởi**: Khoa (ddkhoa2605)
+Nhiệm vụ:
+1. Tóm tắt ngắn gọn tình hình kinh doanh
+2. Đưa ra các điểm sáng (insight tích cực)
+3. Xác định rủi ro / vấn đề
+4. Đề xuất hành động có mức độ ưu tiên
+
+Yêu cầu:
+- Viết ngắn gọn, rõ ràng
+- Tối đa 500 từ mỗi phần
+- Dạng bullet point, mỗi phần tối thiểu 3 bullet points, tối đa 5 bullet points
+- Không lan man
+- Không lặp lại dữ liệu thô
+
+Quy tắc:
+- Insight phải dựa trên số liệu cụ thể
+- Không biến thiếu dữ liệu thành insight (chỉ ghi là hạn chế phân tích)
+- Mỗi đề xuất phải liên quan trực tiếp đến vấn đề
+- Gán mức độ ưu tiên: (Cao / Trung bình / Thấp)
+
+Format:
+
+Tóm tắt:
+- ...
+
+Điểm sáng:
+- ...
+
+Rủi ro:
+- ...
+
+Đề xuất:
+- (Cao) ...
+- (Trung bình) ...
+- (Thấp) ...
+
+Chỉ trả về đúng format trên. Không thêm nội dung khác.
+
+
