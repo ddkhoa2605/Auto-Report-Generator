@@ -23,6 +23,9 @@ Một nền tảng Báo cáo Phân tích Kinh doanh (Business Intelligence Dashb
 
 ### 3. Xuất Báo cáo PDF Tự động (Hỗ trợ Tiếng Việt)
 Hệ thống tự động tổng hợp toàn bộ số liệu và nhận xét từ AI Consultant để đóng gói thành 1 file báo cáo PDF chuẩn mực, sẵn sàng gửi cho Ban giám đốc.
+
+👉 **[Xem mẫu file PDF Báo cáo kinh doanh đã được tạo tự động tại đây](assets/sample_report.pdf)**
+
 *(Bạn có thể thử xuất PDF bằng cách bấm nút "Tạo báo cáo PDF" ở dưới cùng Dashboard nhé!)*
 
 ## Tech Stack
