@@ -1,6 +1,6 @@
 # 📊 AI Business Insight Dashboard
 
-![Dashboard Overview](assets/dashboard_overview.png) *(Chèn ảnh chụp toàn cảnh Dashboard vào đây)*
+![Dashboard Overview](assets/dashboard_overview.png)
 
 Một nền tảng Báo cáo Phân tích Kinh doanh (Business Intelligence Dashboard) cấp doanh nghiệp, được hỗ trợ bởi Trí tuệ nhân tạo (AI). Hệ thống này tiếp nhận dữ liệu bán hàng thô (file CSV/Excel), tự động làm sạch, tính toán các chỉ số kinh doanh chuyên sâu (AOV, Tỷ lệ tăng trưởng, Phát hiện bất thường qua Z-Score) và sử dụng **Coze AI (Claude/GPT-4o)** đóng vai trò như một chuyên gia phân tích dữ liệu tự động. Hệ thống sẽ cung cấp các insight (nhận xét) có giá trị thực tiễn và tự động xuất báo cáo dưới dạng PDF.
 
@@ -16,10 +16,14 @@ Một nền tảng Báo cáo Phân tích Kinh doanh (Business Intelligence Dashb
 ## 📸 Ảnh minh họa
 
 ### 1. Phân tích Xu hướng & KPI
-![KPI and Charts](assets/kpi_charts.png) *(Chèn ảnh chụp khu vực KPI và Biểu đồ vào đây)*
+![KPI and Charts](assets/kpi_charts.png)
 
 ### 2. Góc nhìn từ Chuyên gia AI (AI Insights)
-![AI Insights](assets/ai_insights.png) *(Chèn ảnh chụp phần Nhận xét của AI vào đây)*
+![AI Insights](assets/ai_insights.png)
+
+### 3. Xuất Báo cáo PDF Tự động (Hỗ trợ Tiếng Việt)
+Hệ thống tự động tổng hợp toàn bộ số liệu và nhận xét từ AI Consultant để đóng gói thành 1 file báo cáo PDF chuẩn mực, sẵn sàng gửi cho Ban giám đốc.
+*(Bạn có thể thử xuất PDF bằng cách bấm nút "Tạo báo cáo PDF" ở dưới cùng Dashboard nhé!)*
 
 ## Tech Stack
 
